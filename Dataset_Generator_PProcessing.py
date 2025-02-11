@@ -424,15 +424,23 @@ def generate_dataset_randomopponents_randomfirstmoves_parallel(
     dataset = []  # Store game states and moves
 
     for game_id in game_ids:  # Fixed: Remove `enumerate()`
-        player2_skill = random.randint(150, 5000)  # Randomize Player 2's skill
-        fixed_skill = random.randint(150, 5000)  # Randomize Player 1's skill
+        # player2_skill = random.randint(150, 5000)  # Randomize Player 2's skill
+        # fixed_skill = random.randint(150, 5000)  # Randomize Player 1's skill
+        player2_skill = random.randint(1000, 3000)
+        fixed_skill = random.randint(1000, 3000)
 
         board = np.zeros((6, 7, 2), dtype=int)  # Initialize empty board
         game_over = False
-        player = "plus"
+        player = random.choice(["plus", "minus"])
 
-        # Determine the randomness mode
-        rand_mode = random.choices([0, 5, 10], weights=[0.5, 0.25, 0.25])[0]
+        randomness = random.random() > 0.5
+
+        # # Determine the randomness mode
+        # rand_mode = random.choices(
+        #     [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        #     weights=[0.5, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05],
+        # )[0]
+
         move_count = 0
 
         while not game_over:
@@ -444,12 +452,28 @@ def generate_dataset_randomopponents_randomfirstmoves_parallel(
                 progress_queue.put(1)  # Send update to progress bar
                 break
 
-            # Apply randomness based on selected mode
-            if move_count < rand_mode:
-                move = random.choice(legal_moves)  # Random move
+            # # Apply randomness based on selected mode
+            # if move_count < rand_mode:
+            #     move = random.choice(legal_moves)  # Random move
+            # else:
+            #     nsteps = fixed_skill if player == "plus" else player2_skill
+            #     move = mcts(board, player, nsteps)  # MCTS-based move
+
+            if player == "plus":
+                nsteps = fixed_skill
+                move = mcts(board, player, nsteps)
             else:
-                nsteps = fixed_skill if player == "plus" else player2_skill
-                move = mcts(board, player, nsteps)  # MCTS-based move
+                if (
+                    randomness
+                    and random.random() < 0.7 ** (move_count + 1)
+                    and move_count < 10
+                ):
+                    move = random.choice(legal_moves)  # Random move
+                else:
+                    nsteps = player2_skill
+                    move = mcts(board, player, nsteps)  # MCTS-based move
+
+                move_count += 1  # Increment move counter
 
             dataset.append(
                 (game_id, board.copy(), move, fixed_skill, player2_skill, player)
@@ -465,7 +489,6 @@ def generate_dataset_randomopponents_randomfirstmoves_parallel(
                 game_over = True
 
             player = "minus" if player == "plus" else "plus"
-            move_count += 1  # Increment move counter
 
     return dataset
 
@@ -609,7 +632,7 @@ def progress_updater(progress_queue, num_games):
 
 ################## FOR RANDOM SKILL LEVELING + RANDOM INITIAL MOVES ##################
 def main():
-    num_games = 10000
+    num_games = 10
     num_workers = 10
 
     # Split game IDs for workers
@@ -661,7 +684,7 @@ def main():
     print(f"Dataset generated in {total_time:.2f} seconds.")
 
     # Save dataset
-    with open("Connect4Dataset_RandomOpp_Firstmove.pkl", "wb") as file:
+    with open("Connect4Dataset_SmartRandom.pkl", "wb") as file:
         pickle.dump(all_datasets, file)
 
     print(f"Dataset generated with {len(all_datasets)} entries.")
