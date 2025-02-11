@@ -632,8 +632,8 @@ def progress_updater(progress_queue, num_games):
 
 ################## FOR RANDOM SKILL LEVELING + RANDOM INITIAL MOVES ##################
 def main():
-    num_games = 10
-    num_workers = 10
+    num_games = 600
+    num_workers = 8
 
     # Split game IDs for workers
     games_per_worker = num_games // num_workers
@@ -684,7 +684,7 @@ def main():
     print(f"Dataset generated in {total_time:.2f} seconds.")
 
     # Save dataset
-    with open("Connect4Dataset_SmartRandom.pkl", "wb") as file:
+    with open("Connect4Dataset_SmartRandom_carson7.pkl", "wb") as file:
         pickle.dump(all_datasets, file)
 
     print(f"Dataset generated with {len(all_datasets)} entries.")
