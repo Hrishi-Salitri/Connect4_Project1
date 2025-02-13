@@ -1,7 +1,5 @@
 Connect4Dataset_SmartRandom_combined.pkl
 Connect4Dataset_RandomOpp_Firstmove.pkl
-best_model_combined.h5
-best_model_combined_PlusOnly.h5
 
 transformer_test_attempt1.keras
 
