@@ -8,7 +8,7 @@ ANVIL_KEY = "server_FQYMV77OZUB7T4LCWBYFM3CA-H7QYHHJFDSKCNP6B"
 anvil.server.connect(ANVIL_KEY)
 
 # ✅ **Lazy Load CNN Model**
-MODEL_PATH = "/app/best_model_plus_wFlip.h5"
+MODEL_PATH = "/app/best_model_combined.h5"
 model = None  # Model will load only when needed
 
 def load_model():

@@ -1,0 +1,19 @@
+# Use an official Python runtime as a parent image
+FROM python:3.10
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the current directory contents into the container
+COPY server_transformer.py /app/
+COPY connect4_transformer_4x4.keras /app/
+COPY Customer_trans_layers.py /app/  
+
+# Install TensorFlow and Anvil Uplink
+RUN pip install tensorflow anvil-uplink numpy
+
+# Expose port 5001 for the Transformer model API
+EXPOSE 5001
+
+# Run the server
+CMD ["python", "server_transformer.py"]
